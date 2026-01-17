@@ -1,0 +1,85 @@
+@startuml
+title Diagramme de classes - Système de Gestion Bancaire
+
+' =======================
+' CLASSES PRINCIPALES
+' =======================
+
+abstract class Compte {
+    - numero : String
+    - solde : double
+    - transactions : List<Transaction>
+    + deposer(montant : double)
+    + retirer(montant : double)
+    + getSolde() : double
+    + afficherTransactions()
+}
+
+class CompteCourant {
+    - decouvertAutorise : double
+    + retirer(montant : double)
+}
+
+class CompteEpargne {
+    - tauxInteret : double
+    + retirer(montant : double)
+    + calculerInteret()
+}
+
+class CompteEntreprise {
+    - plafond : double
+    + retirer(montant : double)
+}
+
+class Client {
+    - nom : String
+    - prenom : String
+    - cin : String
+    - adresse : String
+    - comptes : List<Compte>
+    + ajouterCompte(compte : Compte)
+    + afficherComptes()
+}
+
+class Transaction {
+    - date : LocalDateTime
+    - type : String
+    - montant : double
+}
+
+interface CalculInteret {
+    + calculerInteret()
+}
+
+class CompteFactory {
+    + creerCompte(type : String, num : String, solde : double) : Compte
+}
+
+' =======================
+' EXCEPTIONS
+' =======================
+
+class MontantInvalideException
+class SoldeInsuffisantException
+class LimiteDepasseeException
+
+' =======================
+' RELATIONS
+' =======================
+
+Compte <|-- CompteCourant
+Compte <|-- CompteEpargne
+Compte <|-- CompteEntreprise
+
+CompteEpargne ..|> CalculInteret
+
+Client "1" -- "*" Compte
+Compte "1" -- "*" Transaction
+
+CompteFactory ..> Compte
+
+MontantInvalideException --|> RuntimeException
+SoldeInsuffisantException --|> RuntimeException
+LimiteDepasseeException --|> RuntimeException
+
+@enduml
